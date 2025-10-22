@@ -1,5 +1,5 @@
 {
-  "name": "Nova Reunião Closer -> LLM INSIGHT -> Tarefa para Reunião",
+  "name": "Workflow - IA-analise-pre-reuniao-template",
   "nodes": [
     {
       "parameters": {
