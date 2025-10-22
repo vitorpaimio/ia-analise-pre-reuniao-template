@@ -1,0 +1,1244 @@
+{
+  "name": "Nova Reunião Closer -> LLM INSIGHT -> Tarefa para Reunião",
+  "nodes": [
+    {
+      "parameters": {
+        "action": "create",
+        "entity": "activity"
+      },
+      "type": "n8n-nodes-base.pipedriveTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -112,
+        -112
+      ],
+      "id": "30ef9763-251c-4d04-bcad-9a3b3cc0423d",
+      "name": "Pipedrive Trigger",
+      "webhookId": "3556b48f-3e21-4891-af73-fa6660112847",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "zXLToKG1h2Fj7Pal",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "46105545-fd84-48a9-b54e-d9d09f70c958",
+              "leftValue": "={{ $json.data.location.value }}",
+              "rightValue": "meet",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "8b6802c0-2ce0-4577-ab78-c60fe59e85ed",
+              "leftValue": "={{ $json.data.subject }}",
+              "rightValue": "1ª Reuniao",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        -112
+      ],
+      "id": "f5f0c7d3-2105-4462-8897-b2f566957451",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dealId": "={{ $json.data.deal_id }}",
+        "resolveProperties": true
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -112
+      ],
+      "id": "646f13f3-44d6-4a8b-9a2b-d7ce09b148dc",
+      "name": "Get a deal",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "zXLToKG1h2Fj7Pal",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "organization",
+        "operation": "get",
+        "organizationId": "={{ $json.last_activity.org_id }}",
+        "resolveProperties": true
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -112
+      ],
+      "id": "970053e4-4bac-4704-87b6-27b26fbb4985",
+      "name": "Get an organization",
+      "alwaysOutputData": true,
+      "credentials": {
+        "pipedriveApi": {
+          "id": "zXLToKG1h2Fj7Pal",
+          "name": "Pipedrive account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "organization",
+        "operation": "search",
+        "term": "TESTE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        32
+      ],
+      "id": "8adb4f18-7a59-4255-bb04-afc2cc9e617b",
+      "name": "Search an organization",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "zXLToKG1h2Fj7Pal",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "214cdfd6-4dc8-4756-99dd-6846fd5b3925",
+              "name": "dados.CNPJ",
+              "value": "={{ $('Get an organization').item.json.CNPJ }}",
+              "type": "string"
+            },
+            {
+              "id": "def60709-f2c6-45ca-8865-880527187d7f",
+              "name": "dados.SITUACAO CADASTRAL",
+              "value": "={{ $('Get an organization').item.json['SITUACAO CADASTRAL'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b2a65819-39b3-49ec-96cf-4e3084845cea",
+              "name": "dados.MAIOR PARTE DO DEBITO",
+              "value": "={{ $('Get an organization').item.json['MAIOR PARTE DO DEBITO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "719ab604-5a76-4203-b64a-c43975925a79",
+              "name": "dados.CNAE PRINCIPAL",
+              "value": "={{ $('Get an organization').item.json['CNAE PRINCIPAL'] }}",
+              "type": "string"
+            },
+            {
+              "id": "0dce822b-1124-421a-831f-10e9f702a6b1",
+              "name": "dados.PORTE",
+              "value": "={{ $('Get an organization').item.json.PORTE }}",
+              "type": "string"
+            },
+            {
+              "id": "90b1aff8-8414-4359-b57c-e6861e30d89e",
+              "name": "dados.Endereço",
+              "value": "={{ $('Get an organization').item.json['Endereço'] }}",
+              "type": "string"
+            },
+            {
+              "id": "fa47dfff-6f80-4bd2-a342-8adda72cc699",
+              "name": "sdr.POR ONDE FOI O 1º CONTATO EFETIVO?",
+              "value": "={{ $('Get a deal').item.json['POR ONDE FOI O 1º CONTATO EFETIVO?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "145ac314-247a-476d-9288-9edd42964661",
+              "name": "sdr.POR ONDE FOI AGENDADO",
+              "value": "={{ $('Get a deal').item.json['POR ONDE FOI AGENDADO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4626fa89-3ba6-47e2-9583-1fc6ed56259e",
+              "name": "sdr.(contato) PARTICIPANTE DA REUNIAO",
+              "value": "={{ $('Get a deal').item.json['(contato) PARTICIPANTE DA REUNIAO'].name }}",
+              "type": "string"
+            },
+            {
+              "id": "c3edbe56-a560-4138-b968-027281e1be37",
+              "name": "sdr.E-MAIL",
+              "value": "={{ $('Get a deal').item.json['E-MAIL']  }}",
+              "type": "string"
+            },
+            {
+              "id": "78482522-b2e1-4eb3-8431-f77aeefde299",
+              "name": "sdr.CLASSIFICAÇÃO",
+              "value": "={{ $('Get a deal').item.json['CLASSIFICAÇÃO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "fed7e1c6-f0af-4814-8456-cfa431a638a4",
+              "name": "sdr.É DECISOR?",
+              "value": "={{ $('Get a deal').item.json['É DECISOR?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7e3fa433-fd2e-455a-a092-fdaea869a9d4",
+              "name": "sdr.OBJEÇÃO VENCIDA",
+              "value": "={{ $('Get a deal').item.json['OBJEÇÃO VENCIDA'][0] }}",
+              "type": "string"
+            },
+            {
+              "id": "1a4ae79c-e068-4332-8cdf-b5e66fd065a1",
+              "name": "sdr.FATO IMPORTANTE E BREVE RESUMO DO AGENDAMENTO",
+              "value": "={{ $('Get a deal').item.json['FATO IMPORTANTE E BREVE RESUMO DO AGENDAMENTO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "669b7947-353b-4a4f-9d78-13c880a2b40a",
+              "name": "sdr.VALOR MENSAL PARCELA (APROX)",
+              "value": "={{ $('Get a deal').item.json['VALOR MENSAL PARCELA (APROX.)'] }}",
+              "type": "number"
+            },
+            {
+              "id": "6511ed31-564f-403f-b047-2a763c777b35",
+              "name": "pgfn.TOTAL DIVIDA ATIVA",
+              "value": "={{ $('Get a deal').item.json['TOTAL DIVIDA ATIVA'] }}",
+              "type": "number"
+            },
+            {
+              "id": "8b677ed5-7ce3-4fe3-9f24-91a0b0d17145",
+              "name": "pgfn.EXECUÇAO FISCAL ATIVA?",
+              "value": "={{ $('Get a deal').item.json['EXECUÇAO FISCAL ATIVA?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3f5e2728-953e-4757-a041-dbe1f77fec27",
+              "name": "pgfn.CPF SOCIO RESPONDE PELA DIVIDA?",
+              "value": "={{ $('Get a deal').item.json['CPF SOCIO RESPONDE PELA DIVIDA?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e76ff033-5762-4fca-845f-2e20f2cef4d4",
+              "name": "pgfn.TRANSACAO COM IMPUGNACAO OU RESCISAO",
+              "value": "={{ $('Get a deal').item.json['TRANSACAO COM IMPUGNACAO OU RESCISAO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "72d3f0d6-5fdb-4da2-a074-82adfbdf481a",
+              "name": "pgfn.Nº PARCELAMENTOS FEITOS ULTIMOS 5 ANOS",
+              "value": "={{ $('Get a deal').item.json['Nº PARCELAMENTOS FEITOS ULTIMOS 5 ANOS'] }}",
+              "type": "number"
+            },
+            {
+              "id": "4ed715af-a885-48b3-a19b-297fc06ebeca",
+              "name": "pgfn.Nº PARCELAMENTOS ATIVOS",
+              "value": "={{ $('Get a deal').item.json['Nº PARCELAMENTOS ATIVOS'] }}",
+              "type": "number"
+            },
+            {
+              "id": "e0ac9d86-0ccf-4a87-9ae4-4bcb9c3423ba",
+              "name": "pgfn.TOTAL PARCELADO PGFN",
+              "value": "={{ $('Get a deal').item.json['TOTAL PARCELADO PGFN'] }}",
+              "type": "number"
+            },
+            {
+              "id": "8ec44fe9-0f8c-4918-a9e6-7c56c64b0b16",
+              "name": "pgfn.TOTAL SALDO DEVEDOR PGFN",
+              "value": "={{ $('Get a deal').item.json['TOTAL SALDO DEVEDOR PGFN'] }}",
+              "type": "number"
+            },
+            {
+              "id": "575efc75-a5bf-4e35-94bd-ae30b045bf2c",
+              "name": "pgfn.POSSUI TRANSAÇAO COM BENEFICIO?",
+              "value": "={{ $('Get a deal').item.json['POSSUI TRANSAÇAO COM BENEFICIO?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "df56241d-b9e9-457b-bb65-e9427e4a7b59",
+              "name": "receita.TOTAL PARCELADO RFB",
+              "value": "={{ $('Get a deal').item.json['TOTAL PARCELADO RFB'] }}",
+              "type": "number"
+            },
+            {
+              "id": "4bee0c81-9e91-4e65-a0e3-55a040eb0061",
+              "name": "receita.TOTAL SALDO DEVEDOR RFB",
+              "value": "={{ $('Get a deal').item.json['TOTAL SALDO DEVEDOR RFB'] }}",
+              "type": "number"
+            },
+            {
+              "id": "7402246f-e03a-4adc-a562-ad7b6c2fc610",
+              "name": "receita.PARCELADO CONVENCIONAL RFB",
+              "value": "={{ $('Get a deal').item.json['PARCELADO CONVENCIONAL RFB'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b33f1eb0-f6fb-43da-a750-d46030d19059",
+              "name": "receita.SALDO DEVEDOR CONVENCIONAL RFB",
+              "value": "={{ $('Get a deal').item.json['SALDO DEVEDOR CONVENCIONAL RFB'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ba23eae3-503a-4564-bc8d-fb069318ca35",
+              "name": "receita.PARCELADO ESPECIAL RFB",
+              "value": "={{ $('Get a deal').item.json['PARCELADO ESPECIAL RFB'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4465b2a6-7e11-41ea-aff7-54e99fb16427",
+              "name": "receita.PREJUIZO FISCAL USADO NO PARCELAMENTO",
+              "value": "={{ $('Get a deal').item.json['PREJUIZO FISCAL USADO NO PARCELAMENTO'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1104,
+        -224
+      ],
+      "id": "f0aaf0f4-fc99-421b-814f-88f249e401fb",
+      "name": "fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d8c94c80-d283-435a-a19c-fa72a4509985",
+              "leftValue": "={{ $json }}",
+              "rightValue": "error",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        -112
+      ],
+      "id": "26976be3-105f-4e24-8fb6-78f027462de5",
+      "name": "org existe"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analise o seguinte lead:\n\nDADOS CADASTRAIS:\n{{ JSON.stringify($json.dados, null, 2) }}\n\nINFORMAÇÕES DO SDR:\n{{ JSON.stringify($json.sdr, null, 2) }}\n\nDÍVIDAS PGFN:\n{{ JSON.stringify($json.pgfn, null, 2) }}\n\nDÍVIDAS RECEITA FEDERAL:\n{{ JSON.stringify($json.receita, null, 2) }}\n\n---\nGere uma análise completa seguindo seu sistema de scoring e prepare insights para o Closer.",
+        "options": {
+          "systemMessage": "=Você é um Consultor Estratégico de Negociação de Dívidas Tributárias especializado em análise pré-reunião para preparar Closers.\n\nHoje é {{ $now }}\n\n## OBJETIVO:\nGerar análise HTML consultiva para Pipedrive: mostrar oportunidades fiscais desconhecidas pelo cliente, não cobrar dívidas conhecidas.\n\n## INPUT:\n- cadastro (CNPJ, CNAE, porte, setor)\n- agendamento e decisor\n- dívidas Procuradoria\n- dívidas Receita Federal\n\n## FLUXO:\n\n**PASSO 1 - CALCULAR TOTAIS**\nUse Calculator tool:\n- Dívida Total = SALDO DEVEDOR PGFN + SALDO DEVEDOR RFB\n- % RFB e % PGFN\n\n**PASSO 2 - VALIDAR BENEFÍCIOS**\nChame \"validador_beneficios_gov\" com esta mensagem:\n\n\"Valide benefícios para:\nCNAE: {{ $json.dados['CNAE PRINCIPAL'] }}\nDívida RFB: R$ {{ $json.receita['TOTAL SALDO DEVEDOR RFB'] }}\nDívida PGFN: R$ {{ $json.pgfn['TOTAL SALDO DEVEDOR PGFN'] }}\"\n3. **ANALISE ESTRATEGICAMENTE**:\n   - Match benefício x dívida\n   - Economia (R$ e %)\n   - Urgência de prazo\n   - Requisitos aplicáveis\n\n**PASSO 4 - GERE HTML** (estrutura abaixo)\n\n## OUTPUT HTML:\n\n<b>ANÁLISE PRÉ-REUNIÃO</b>\n<div>========================================</div>\n\n<b>OPORTUNIDADES IDENTIFICADAS</b>\n<ul>\n<li><b>Benefício Principal:</b> [nome oficial] - Economia: R$ [valor] ([%]%)</li>\n<li><b>Fonte:</b> [URL gov.br]</li>\n<li><b>Prazo:</b> [data OU \"vigente\"] [se < 60 dias: adicionar \"[!] URGENTE\"]</li>\n</ul>\n<br>\n\n<b>ESTRATÉGIA DE NEGOCIAÇÃO</b>\n<div><b>Programa:</b> [nome completo]</div>\n<div><b>Impacto:</b> Redução de R$ [economia] em [órgão]</div>\n<div><b>Ação:</b> [próximos passos específicos]</div>\n<br>\n\n<b>PERFIL DO DECISOR</b>\n<div><b>Nome:</b> {{ $json.sdr['(contato) PARTICIPANTE DA REUNIAO'] }} | <b>Tipo:</b> {{ $json.sdr['CLASSIFICAÇÃO'] }} | <b>Decisor:</b> {{ $json.sdr['É DECISOR?'] }}</div>\n<div><b>Agendamento:</b> {{ $json.sdr['FATO IMPORTANTE E BREVE RESUMO DO AGENDAMENTO'] }}</div>\n<div><b>Objeção:</b> {{ $json.sdr['OBJEÇÃO VENCIDA'] }}</div>\n<br>\n\n<b>SITUAÇÃO FINANCEIRA</b>\n<ul>\n<li><b>Dívida Total:</b> R$ [X]M ([%]% RFB | [%]% PGFN)</li>\n<li><b>Parcela Mensal Atual:</b> R$ {{ $json.sdr['VALOR MENSAL PARCELA (APROX)'] | formatNumber }}</li>\n<li><b>Parcelamentos Ativos:</b> {{ $json.pgfn['Nº PARCELAMENTOS ATIVOS'] }} PGFN</li>\n<li><b>Execução Fiscal:</b> {{ $json.pgfn['EXECUÇAO FISCAL ATIVA?'] }}</li>\n</ul>\n<br>\n\n<b>PONTOS DE DOR + SOLUÇÃO</b>\n<ol>\n<li>[Dor identificada com valor] → [Benefício aplicável]</li>\n<li>[Dor identificada com valor] → [Benefício aplicável]</li>\n<li>[Dor identificada com valor] → [Benefício aplicável]</li>\n</ol>\n<br>\n\n<b>PITCH DE ABERTURA</b>\n<div>\"{{ $json.sdr['(contato) PARTICIPANTE DA REUNIAO'] }}, identificamos que {{ $json.dados['CNAE PRINCIPAL'] }} pode economizar R$ [valor] ([%]%) em dívidas através do [PROGRAMA]. [Mencionar urgência se houver]. Vamos estruturar?\"</div>\n<br>\n\n<b>PERGUNTAS-CHAVE</b>\n<ol>\n<li>Conhece o [programa vigente] aplicável ao seu CNAE?</li>\n<li>Com parcela atual de R$ {{ $json.sdr['VALOR MENSAL PARCELA (APROX)'] }}, qual margem para renegociar?</li>\n<li>[Pergunta sobre execução fiscal OU múltiplos parcelamentos]</li>\n</ol>\n<br>\n\n<b>ALERTAS</b>\n<ul>\n<li>[!] {{ $json.pgfn['Nº PARCELAMENTOS ATIVOS'] }} parcelamentos ativos PGFN - risco de rescisão</li>\n<li>[!] [Prazo crítico benefício OU dado faltante]</li>\n</ul>\n<br>\n\n<b>OBJEÇÕES PROVÁVEIS</b>\n<div><b>1.</b> \"Já negociamos\" → [Benefício novo/desconhecido]</div>\n<div><b>2.</b> \"Sem caixa\" → Economia de R$ [X] libera [Y]% do comprometido</div>\n\n<div>----------------------------------------</div>\n<div><i>Análise automática • Valide dados críticos antes da reunião</i></div>\n\n## REGRAS:\n\n1. HTML puro, sem ```html ou markdown\n2. Sem emojis Unicode - use ✓ ✗ → • [!]\n3. Quantifique com valores reais do JSON\n4. Use apenas benefícios validados (se vazio: \"Nenhum benefício gov.br confirmado\")\n5. Cite fontes oficiais\n6. Tom consultivo: oportunidade, não cobrança\n7. Comece direto: <b>ANÁLISE PRÉ-REUNIÃO</b>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2064,
+        -208
+      ],
+      "id": "e736e3e0-807c-46ee-aff1-f6ffd75ebca2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        304
+      ],
+      "id": "f86877e5-3fd2-4d74-9bc6-832d341e4318",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1648,
+        48
+      ],
+      "id": "e489268e-8bd5-451a-9a2e-367c9a5dce30",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "dBofW8rp66M1gziC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "note",
+        "content": "={{ $json.output }}",
+        "additionalFields": {
+          "deal_id": "={{ $('Filter').item.json.data.deal_id }}",
+          "lead_id": "={{ $('Filter').item.json.data.lead_id }}",
+          "person_id": "={{ $('Filter').item.json.data.person_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        -208
+      ],
+      "id": "2b5f707d-7155-4c02-95ce-ed0a36359618",
+      "name": "Create a note",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "zXLToKG1h2Fj7Pal",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "=Chame esta tool para pesquisar programas governamentais vigentes em 2025 (PGFN/RFB) aplicáveis ao CNAE e setor da empresa antes de gerar a análise. Busca informações na web sobre benefícios fiscais, programas de transação tributária e regularização de dívidas. ",
+        "method": "POST",
+        "url": "https://google.serper.dev/news",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "8ccb5c2c6852e2e6db4afa83b88077e2aca26da1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `query to search`, 'string') }}"
+            },
+            {
+              "name": "location",
+              "value": "Brazil"
+            },
+            {
+              "name": "gl",
+              "value": "br"
+            },
+            {
+              "name": "hl",
+              "value": "pt-br"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        2352,
+        304
+      ],
+      "id": "638b8c2a-4cc0-40c9-abf2-e81910263972",
+      "name": "web_search"
+    },
+    {
+      "parameters": {
+        "toolDescription": "=Chame esta tool para varrer os sites e identificar a vigencia dos programas antes de realizar a análise, relacionado ao benefício achado pela tool `web_search`",
+        "method": "POST",
+        "url": "=https://scrape.serper.dev",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "8ccb5c2c6852e2e6db4afa83b88077e2aca26da1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=url",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `URL`, 'string') }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        2192,
+        304
+      ],
+      "id": "1b6c6eca-718e-4b4d-8eff-105c6e071b71",
+      "name": "web_scrape"
+    },
+    {
+      "parameters": {
+        "content": "## ENTRADA\n### - TODA VEZ QUE UMA TAREFA DE REUNIÃO PARA O CLOSER É CRIADA DISPARA UM WEBHOOK\n### - REALIZA O FILTRO PARA O TIPO DE REUNIÃO \n### - BUSCA DETALHES DA NEGOCIAÇÃO E ORGANIZAÇÃO",
+        "height": 352,
+        "width": 832,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -288
+      ],
+      "id": "e11ef50e-3f20-4ec8-b5b9-1e429efec3df",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## CONDIÇÃO IF\n### - VERIFICA SE FOI ACHADO A ORGANIZAÇÃO",
+        "height": 352,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -288
+      ],
+      "id": "f8769c4b-513f-4481-9bd7-26a3f3e30b7a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1664,
+        -208
+      ],
+      "id": "9bdd6d17-ff66-4d43-b68d-6e72e7ab9123",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "214cdfd6-4dc8-4756-99dd-6846fd5b3925",
+              "name": "dados.CNPJ",
+              "value": "={{ $('Get an organization').item.json.CNPJ }}",
+              "type": "string"
+            },
+            {
+              "id": "def60709-f2c6-45ca-8865-880527187d7f",
+              "name": "dados.SITUACAO CADASTRAL",
+              "value": "={{ $('Get an organization').item.json['SITUACAO CADASTRAL'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b2a65819-39b3-49ec-96cf-4e3084845cea",
+              "name": "dados.MAIOR PARTE DO DEBITO",
+              "value": "={{ $('Get an organization').item.json['MAIOR PARTE DO DEBITO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "719ab604-5a76-4203-b64a-c43975925a79",
+              "name": "dados.CNAE PRINCIPAL",
+              "value": "={{ $('Get an organization').item.json['CNAE PRINCIPAL'] }}",
+              "type": "string"
+            },
+            {
+              "id": "0dce822b-1124-421a-831f-10e9f702a6b1",
+              "name": "dados.PORTE",
+              "value": "={{ $('Get an organization').item.json.PORTE }}",
+              "type": "string"
+            },
+            {
+              "id": "90b1aff8-8414-4359-b57c-e6861e30d89e",
+              "name": "dados.Endereço",
+              "value": "={{ $('Get an organization').item.json['Endereço'] }}",
+              "type": "string"
+            },
+            {
+              "id": "fa47dfff-6f80-4bd2-a342-8adda72cc699",
+              "name": "sdr.POR ONDE FOI O 1º CONTATO EFETIVO?",
+              "value": "={{ $('Get a deal').item.json['POR ONDE FOI O 1º CONTATO EFETIVO?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "145ac314-247a-476d-9288-9edd42964661",
+              "name": "sdr.POR ONDE FOI AGENDADO",
+              "value": "={{ $('Get a deal').item.json['POR ONDE FOI AGENDADO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4626fa89-3ba6-47e2-9583-1fc6ed56259e",
+              "name": "sdr.(contato) PARTICIPANTE DA REUNIAO",
+              "value": "={{ $('Get a deal').item.json['(contato) PARTICIPANTE DA REUNIAO'].name }}",
+              "type": "string"
+            },
+            {
+              "id": "c3edbe56-a560-4138-b968-027281e1be37",
+              "name": "sdr.E-MAIL",
+              "value": "={{ $('Get a deal').item.json['E-MAIL']  }}",
+              "type": "string"
+            },
+            {
+              "id": "78482522-b2e1-4eb3-8431-f77aeefde299",
+              "name": "sdr.CLASSIFICAÇÃO",
+              "value": "={{ $('Get a deal').item.json['CLASSIFICAÇÃO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "fed7e1c6-f0af-4814-8456-cfa431a638a4",
+              "name": "sdr.É DECISOR?",
+              "value": "={{ $('Get a deal').item.json['É DECISOR?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7e3fa433-fd2e-455a-a092-fdaea869a9d4",
+              "name": "sdr.OBJEÇÃO VENCIDA",
+              "value": "={{ $('Get a deal').item.json['OBJEÇÃO VENCIDA'][0] }}",
+              "type": "string"
+            },
+            {
+              "id": "1a4ae79c-e068-4332-8cdf-b5e66fd065a1",
+              "name": "sdr.FATO IMPORTANTE E BREVE RESUMO DO AGENDAMENTO",
+              "value": "={{ $('Get a deal').item.json['FATO IMPORTANTE E BREVE RESUMO DO AGENDAMENTO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "669b7947-353b-4a4f-9d78-13c880a2b40a",
+              "name": "sdr.VALOR MENSAL PARCELA (APROX)",
+              "value": "={{ $('Get a deal').item.json['VALOR MENSAL PARCELA (APROX.)'] }}",
+              "type": "number"
+            },
+            {
+              "id": "6511ed31-564f-403f-b047-2a763c777b35",
+              "name": "pgfn.TOTAL DIVIDA ATIVA",
+              "value": "={{ $('Get a deal').item.json['TOTAL DIVIDA ATIVA'] }}",
+              "type": "number"
+            },
+            {
+              "id": "8b677ed5-7ce3-4fe3-9f24-91a0b0d17145",
+              "name": "pgfn.EXECUÇAO FISCAL ATIVA?",
+              "value": "={{ $('Get a deal').item.json['EXECUÇAO FISCAL ATIVA?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3f5e2728-953e-4757-a041-dbe1f77fec27",
+              "name": "pgfn.CPF SOCIO RESPONDE PELA DIVIDA?",
+              "value": "={{ $('Get a deal').item.json['CPF SOCIO RESPONDE PELA DIVIDA?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e76ff033-5762-4fca-845f-2e20f2cef4d4",
+              "name": "pgfn.TRANSACAO COM IMPUGNACAO OU RESCISAO",
+              "value": "={{ $('Get a deal').item.json['TRANSACAO COM IMPUGNACAO OU RESCISAO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "72d3f0d6-5fdb-4da2-a074-82adfbdf481a",
+              "name": "pgfn.Nº PARCELAMENTOS FEITOS ULTIMOS 5 ANOS",
+              "value": "={{ $('Get a deal').item.json['Nº PARCELAMENTOS FEITOS ULTIMOS 5 ANOS'] }}",
+              "type": "number"
+            },
+            {
+              "id": "4ed715af-a885-48b3-a19b-297fc06ebeca",
+              "name": "pgfn.Nº PARCELAMENTOS ATIVOS",
+              "value": "={{ $('Get a deal').item.json['Nº PARCELAMENTOS ATIVOS'] }}",
+              "type": "number"
+            },
+            {
+              "id": "e0ac9d86-0ccf-4a87-9ae4-4bcb9c3423ba",
+              "name": "pgfn.TOTAL PARCELADO PGFN",
+              "value": "={{ $('Get a deal').item.json['TOTAL PARCELADO PGFN'] }}",
+              "type": "number"
+            },
+            {
+              "id": "8ec44fe9-0f8c-4918-a9e6-7c56c64b0b16",
+              "name": "pgfn.TOTAL SALDO DEVEDOR PGFN",
+              "value": "={{ $('Get a deal').item.json['TOTAL SALDO DEVEDOR PGFN'] }}",
+              "type": "number"
+            },
+            {
+              "id": "575efc75-a5bf-4e35-94bd-ae30b045bf2c",
+              "name": "pgfn.POSSUI TRANSAÇAO COM BENEFICIO?",
+              "value": "={{ $('Get a deal').item.json['POSSUI TRANSAÇAO COM BENEFICIO?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "df56241d-b9e9-457b-bb65-e9427e4a7b59",
+              "name": "receita.TOTAL PARCELADO RFB",
+              "value": "={{ $('Get a deal').item.json['TOTAL PARCELADO RFB'] }}",
+              "type": "number"
+            },
+            {
+              "id": "4bee0c81-9e91-4e65-a0e3-55a040eb0061",
+              "name": "receita.TOTAL SALDO DEVEDOR RFB",
+              "value": "={{ $('Get a deal').item.json['TOTAL SALDO DEVEDOR RFB'] }}",
+              "type": "number"
+            },
+            {
+              "id": "7402246f-e03a-4adc-a562-ad7b6c2fc610",
+              "name": "receita.PARCELADO CONVENCIONAL RFB",
+              "value": "={{ $('Get a deal').item.json['PARCELADO CONVENCIONAL RFB'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b33f1eb0-f6fb-43da-a750-d46030d19059",
+              "name": "receita.SALDO DEVEDOR CONVENCIONAL RFB",
+              "value": "={{ $('Get a deal').item.json['SALDO DEVEDOR CONVENCIONAL RFB'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ba23eae3-503a-4564-bc8d-fb069318ca35",
+              "name": "receita.PARCELADO ESPECIAL RFB",
+              "value": "={{ $('Get a deal').item.json['PARCELADO ESPECIAL RFB'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4465b2a6-7e11-41ea-aff7-54e99fb16427",
+              "name": "receita.PREJUIZO FISCAL USADO NO PARCELAMENTO",
+              "value": "={{ $('Get a deal').item.json['PREJUIZO FISCAL USADO NO PARCELAMENTO'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1296,
+        32
+      ],
+      "id": "36844bcf-f551-4015-a3ac-1e927b663ac1",
+      "name": "fields1"
+    },
+    {
+      "parameters": {
+        "content": "## DADOS\n### - TRATA OS DADOS IMPORTANTES PARA A LLM",
+        "height": 624,
+        "width": 608,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -400
+      ],
+      "id": "280ab81b-332e-40f4-b339-2e49d90cc147",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## LLM",
+        "height": 256,
+        "width": 288,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        -32
+      ],
+      "id": "f2eaf603-c87b-4a8b-b112-68d57da24172",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## MERGE",
+        "height": 352,
+        "width": 288,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        -400
+      ],
+      "id": "22ab2dd1-ba15-4cc7-8540-6a214d2be67a",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## AGENTE IA",
+        "height": 352,
+        "width": 688,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        -400
+      ],
+      "id": "aca2382a-a965-48cd-b14c-db49fbdfe228",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## FERRAMENTAS\n",
+        "height": 464,
+        "width": 688,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        -32
+      ],
+      "id": "7c021c4c-7e78-4486-addc-082eab90bdc7",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## SAÍDA\n### - DEVOLVE A ANÁLISE DOS DADOS FEITOS PELA IA \n### - CRIA UMA NOTA NA NEGOCIAÇÃO DENTRO DO CRM ",
+        "height": 624,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        -400
+      ],
+      "id": "099c78b7-7921-460d-88e4-87e72c93b01c",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Valide benefícios fiscais vigentes em sites .gov.br para CNAE específico. Confirma vigência, aplicabilidade e extrai informações oficiais.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', `- CNAE: código CNAE da empresa\n- Setor: descrição do setor`, 'string') }}",
+        "options": {
+          "systemMessage": "=Você é um especialista em validação de benefícios fiscais do governo brasileiro.\n\n## INPUT ESPERADO:\n- CNAE: código CNAE da empresa\n- Setor: descrição do setor\n\n## SUA MISSÃO:\n\n1. PESQUISE usando web_search:\n   Query: \"benefícios transação tributária cnae [CNAE] 2025 site:gov.br\"\n   Query: \"programa regularização fiscal [SETOR] 2025 site:gov.br\"\n\n2. FILTRE apenas URLs que contenham \"gov.br\"\n\n3. Para CADA URL gov.br encontrada, use web_scrape para:\n   - Confirmar se o programa está VIGENTE (busque palavras: \"vigente\", \"2025\", \"prazo\", \"até\")\n   - Verificar se o CNAE informado está incluído (busque o código ou \"todos os CNAEs\", \"qualquer atividade\")\n   - Extrair: nome do programa, % desconto, prazo de adesão, requisitos\n\n4. RETORNE apenas JSON puro:\n{\n  \"beneficios_confirmados\": [\n    {\n      \"nome\": \"Nome oficial do programa\",\n      \"fonte_oficial\": \"URL gov.br\",\n      \"vigente\": true/false,\n      \"aplica_cnae\": true/false,\n      \"desconto\": \"% ou valor\",\n      \"prazo_adesao\": \"data ou 'sem prazo definido'\",\n      \"requisitos\": \"lista de requisitos\",\n      \"data_consulta\": \"2025-10-22\"\n    }\n  ],\n  \"alertas\": [\"avisos sobre prazos urgentes ou restrições\"]\n}\n\nREGRAS:\n- Só inclua programas com vigente=true E aplica_cnae=true\n- NUNCA invente nomes de programas\n- Se não encontrar nada, retorne array vazio\n- Priorize fontes da Receita Federal e PGFN\n```\n\n**Tools conectadas:**\n- web_search\n- web_scrape\n\n---"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        2288,
+        0
+      ],
+      "id": "0f2e4fc0-f40d-4406-9e95-de06f9c8be91",
+      "name": "validador_beneficios_gov"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2048,
+        304
+      ],
+      "id": "6bc9dc45-6636-4ab5-aecd-3fc4731c5d96",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "dBofW8rp66M1gziC",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Pipedrive Trigger": [
+      {
+        "json": {
+          "data": {
+            "active_flag": true,
+            "add_time": "2025-10-22T13:38:57Z",
+            "busy_flag": null,
+            "custom_fields": {},
+            "deal_id": 198360,
+            "done": false,
+            "due_date": "2025-10-23",
+            "due_time": {
+              "timezone_id": null,
+              "value": "14:30:00"
+            },
+            "duration": {
+              "timezone_id": null,
+              "value": "00:30:00"
+            },
+            "id": 1123349,
+            "type": "prospeccao_reuniao",
+            "lead_id": null,
+            "location": {
+              "country": null,
+              "formatted_address": null,
+              "locality": null,
+              "sublocality": null,
+              "subpremise": null,
+              "route": null,
+              "street_number": null,
+              "admin_area_level_1": null,
+              "admin_area_level_2": null,
+              "postal_code": null,
+              "value": "https://meet.google.com/qnv-mxzi-oav"
+            },
+            "org_id": 173290,
+            "owner_id": 24071170,
+            "person_id": 251309,
+            "public_description": "──────────<br><br>3 Tiago da Silveira Barboza está convidando você para uma chamada agendada do Google Meet.<br><br>Participar de reunião no Google Meet: <a href=\"https://meet.google.com/qnv-mxzi-oav\" rel=\"noopener noreferrer\">https://meet.google.com/qnv-mxzi-oav</a><br><br>──────────",
+            "subject": "1ª Reuniao",
+            "update_time": "2025-10-22T13:38:57Z",
+            "update_user_id": null
+          },
+          "previous": null,
+          "meta": {
+            "action": "create",
+            "company_id": "14328344",
+            "correlation_id": "90bf1843-4537-4fbc-951e-f8fe6615e5de",
+            "entity_id": "1123349",
+            "entity": "activity",
+            "id": "c28c437a-bdf8-4de9-93d3-7f23af6e1967",
+            "is_bulk_edit": false,
+            "timestamp": "2025-10-22T13:38:57.894Z",
+            "type": "general",
+            "user_id": "24071170",
+            "version": "2.0",
+            "webhook_id": "1802901",
+            "webhook_owner_id": "22543842",
+            "change_source": "app",
+            "permitted_user_ids": [
+              "24071170",
+              "24149677",
+              "109294",
+              "14214740",
+              "14284568",
+              "16413097",
+              "21961876",
+              "21987638",
+              "22543842",
+              "22639344",
+              "23639057",
+              "23644337",
+              "23650442",
+              "23650453",
+              "23656701",
+              "23681660",
+              "23859662",
+              "23874116",
+              "23876030",
+              "23876063",
+              "23876140",
+              "23876173",
+              "23932372",
+              "24031086",
+              "24094578",
+              "24149644",
+              "24908831",
+              "14259807",
+              "14330361",
+              "21602088",
+              "23535349",
+              "23613086",
+              "23833900",
+              "23859684",
+              "23876096",
+              "23925585",
+              "23952106",
+              "23952117",
+              "24095645",
+              "14213783",
+              "14213794",
+              "23654611",
+              "23656712",
+              "23876085",
+              "21987627",
+              "23704276",
+              "23709270",
+              "23813484",
+              "24058608",
+              "24146883"
+            ],
+            "attempt": 1,
+            "host": "grupovillela2.pipedrive.com"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Pipedrive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Get a deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a deal": {
+      "main": [
+        [
+          {
+            "node": "Get an organization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an organization": {
+      "main": [
+        [
+          {
+            "node": "org existe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "org existe": {
+      "main": [
+        [
+          {
+            "node": "fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search an organization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create a note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "web_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "validador_beneficios_gov",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "web_scrape": {
+      "ai_tool": [
+        [
+          {
+            "node": "validador_beneficios_gov",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search an organization": {
+      "main": [
+        [
+          {
+            "node": "fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validador_beneficios_gov": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "validador_beneficios_gov",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3f8fdff4-d641-4ecb-8177-de6ff3e2acaf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c996916be5d2d7629a066e0a8e6b41b7fefce543bec9496a00028421ae29b8e5"
+  },
+  "id": "nGzOaXABJbRTnuqW",
+  "tags": [
+    {
+      "createdAt": "2025-10-16T13:24:31.429Z",
+      "updatedAt": "2025-10-16T13:24:31.429Z",
+      "id": "ySKESO6lhgILbVLs",
+      "name": "Grupo Vilela"
+    },
+    {
+      "createdAt": "2025-10-16T13:24:36.987Z",
+      "updatedAt": "2025-10-16T13:24:36.987Z",
+      "id": "Ut0qxSF8flAjROLt",
+      "name": "vitorpaim.io"
+    },
+    {
+      "createdAt": "2025-10-20T13:00:56.604Z",
+      "updatedAt": "2025-10-20T13:00:56.604Z",
+      "id": "DuRIRa7fIJrl4fmF",
+      "name": "Em Produção"
+    }
+  ]
+}
